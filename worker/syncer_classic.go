@@ -18,14 +18,14 @@ func NewClassicSyncer(c *pc.Config) (Worker, error) {
 	if c.ClassicSync == nil {
 		return nil, pc.ErrConfigEmpty
 	}
-	return &ClassicSyncer{c: c.ClassicSync}, nil
+	return &ClassicSyncer{c: c.ClassicSync, echan: make(chan error)}, nil
 }
 
 func (s *ClassicSyncer) Run() error {
 	var err error
 
 	addr := fmt.Sprintf("%s:%d", s.c.PikaHost, s.c.PikaPort+2000)
-	s.h, err = handler.NewHandle(addr, s.fireFn(), s.exitFn(), s.c.RowFunc)
+	s.h, err = handler.NewHandle(addr, s.fireFn(), s.exitFn(), s.c.RowFunc, s.echan)
 	if err != nil {
 		return err
 	}
@@ -47,7 +47,7 @@ func (s *ClassicSyncer) Stop() error {
 }
 
 func (s *ClassicSyncer) Errors() chan error {
-	return s.h.Errors()
+	return s.echan
 }
 
 func (s *ClassicSyncer) fireFn() func() error {

@@ -56,6 +56,12 @@ func main() {
 		}()
 	}
 
+	go func() {
+		for err := range ins.Errors() {
+			log.Printf("pikaso err %s\n", err.Error())
+		}
+	}()
+
 	err = ins.Run()
 	if err != nil {
 		log.Fatalf("💡  Pikaso exit, err [%s]\n", err.Error())
@@ -101,7 +107,7 @@ func shardingSync() (w.Worker, error) {
 					Index:       0,
 					DbName:      "db0",
 					BeginFile:   0,
-					BeginOffset: 1091,
+					BeginOffset: 0,
 				},
 				&pc.SlotConfig{
 					Index:       1,

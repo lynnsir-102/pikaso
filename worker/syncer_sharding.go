@@ -19,14 +19,14 @@ func NewShardingSyncer(c *pc.Config) (Worker, error) {
 		return nil, pc.ErrConfigEmpty
 	}
 
-	return &ShardingSyncer{c: c.ShardingSync}, nil
+	return &ShardingSyncer{c: c.ShardingSync, echan: make(chan error)}, nil
 }
 
 func (s *ShardingSyncer) Run() error {
 	var err error
 
 	addr := fmt.Sprintf("%s:%d", s.c.PikaHost, s.c.PikaPort+2000)
-	s.h, err = handler.NewHandle(addr, s.fireFn(), s.exitFn(), s.c.RowFunc)
+	s.h, err = handler.NewHandle(addr, s.fireFn(), s.exitFn(), s.c.RowFunc, s.echan)
 	if err != nil {
 		return err
 	}
@@ -48,7 +48,7 @@ func (s *ShardingSyncer) Stop() error {
 }
 
 func (s *ShardingSyncer) Errors() chan error {
-	return s.h.Errors()
+	return s.echan
 }
 
 func (s *ShardingSyncer) fireFn() func() error {

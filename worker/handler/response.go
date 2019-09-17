@@ -3,6 +3,7 @@ package handler
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	pr "github.com/lynnsir-102/pikaso/pikaproto"
 )
@@ -101,10 +102,7 @@ func (h *Handle) binlogResponse(resp *pr.InnerResponse) error {
 				binOffset = bs
 
 				if bs.GetFilenum() == 0 && bs.GetOffset() == 0 {
-					if h.debug {
-						fmt.Println("receive master heartbeat ❤️ ❤️ ❤️")
-
-					}
+					fmt.Printf("%s, partition %d, receive master heartbeat ❤️ ❤️ ❤️\n", time.Now().Format(TimeFormat), pid)
 					continue
 				}
 
