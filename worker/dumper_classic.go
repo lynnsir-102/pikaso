@@ -33,6 +33,10 @@ func (s *ClassicDumper) GetMetasOffset() []map[string]interface{} {
 	return nil
 }
 
+func (s *ClassicDumper) RegisterProcessor(fn func(row []string)) error {
+	return s.h.WithProcessor(fn)
+}
+
 func (d *ClassicDumper) fireFn() func() error {
 	return func() error {
 		return d.h.SendDbSync(0, 0, 0, "db0")

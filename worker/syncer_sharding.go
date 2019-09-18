@@ -21,12 +21,10 @@ func NewShardingSyncer(c *pc.Config) (Worker, error) {
 
 	var err error
 	addr := fmt.Sprintf("%s:%d", s.c.PikaHost, s.c.PikaPort+2000)
-	s.h, err = handler.NewHandle(addr, s.fireFn(), s.exitFn(), s.c.RowFunc)
+	s.h, err = handler.NewHandle(addr, s.c.Debug, s.fireFn(), s.exitFn())
 	if err != nil {
 		return nil, err
 	}
-
-	s.h.WithDebug(s.c.Debug)
 
 	return s, nil
 }
@@ -52,6 +50,10 @@ func (s *ShardingSyncer) Errors() chan error {
 
 func (s *ShardingSyncer) GetMetasOffset() []map[string]interface{} {
 	return s.h.GetMetasOffset()
+}
+
+func (s *ShardingSyncer) RegisterProcessor(fn func(row []string)) error {
+	return s.h.WithProcessor(fn)
 }
 
 func (s *ShardingSyncer) fireFn() func() error {

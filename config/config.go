@@ -16,7 +16,6 @@ type DumpConfig struct {
 	Debug    bool
 	PikaHost string
 	PikaPort int
-	RowFunc  func(row []string)
 }
 
 type ClassicConfig struct {
@@ -25,7 +24,6 @@ type ClassicConfig struct {
 	PikaPort     int
 	BinlogFile   uint32
 	BinlogOffset uint64
-	RowFunc      func(row []string)
 }
 
 type ShardingConfig struct {
@@ -33,7 +31,6 @@ type ShardingConfig struct {
 	PikaHost string
 	PikaPort int
 	Slots    []*SlotConfig
-	RowFunc  func(row []string)
 }
 
 type SlotConfig struct {
