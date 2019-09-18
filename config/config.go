@@ -20,12 +20,12 @@ type DumpConfig struct {
 }
 
 type ClassicConfig struct {
-	Debug       bool
-	PikaHost    string
-	PikaPort    int
-	BeginFile   uint32
-	BeginOffset uint64
-	RowFunc     func(row []string)
+	Debug        bool
+	PikaHost     string
+	PikaPort     int
+	BinlogFile   uint32
+	BinlogOffset uint64
+	RowFunc      func(row []string)
 }
 
 type ShardingConfig struct {
@@ -37,8 +37,8 @@ type ShardingConfig struct {
 }
 
 type SlotConfig struct {
-	Index       uint32
-	DbName      string
-	BeginFile   uint32
-	BeginOffset uint64
+	PartitionId  uint32
+	DbName       string
+	BinlogFile   uint32
+	BinlogOffset uint64
 }

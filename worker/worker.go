@@ -4,4 +4,5 @@ type Worker interface {
 	Run() error
 	Stop() error
 	Errors() chan error
+	GetMetasOffset() []map[string]interface{}
 }

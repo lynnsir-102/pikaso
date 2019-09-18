@@ -29,6 +29,10 @@ func (s *ClassicDumper) Errors() chan error {
 	return nil
 }
 
+func (s *ClassicDumper) GetMetasOffset() []map[string]interface{} {
+	return nil
+}
+
 func (d *ClassicDumper) fireFn() func() error {
 	return func() error {
 		return d.h.SendDbSync(0, 0, 0, "db0")

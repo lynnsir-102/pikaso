@@ -24,7 +24,23 @@ func (m *metaManager) set(i uint32, params ...interface{}) {
 	}
 }
 
+func (m *metaManager) getShifts() []map[string]interface{} {
+	shifts := make([]map[string]interface{}, 0, len(m.metas))
+
+	for i, v := range m.metas {
+		shifts = append(shifts, map[string]interface{}{
+			"dbname":       v.db,
+			"partitionId":  i,
+			"binlogFile":   v.file,
+			"binlogOffset": v.offset,
+		})
+	}
+
+	return shifts
+}
+
 type binlogMeta struct {
+	db         string
 	file       uint32
 	offset     uint64
 	initFile   *uint32
@@ -40,6 +56,8 @@ func newMeta(params ...interface{}) *binlogMeta {
 func (b *binlogMeta) set(params ...interface{}) {
 	for _, param := range params {
 		switch v := param.(type) {
+		case string:
+			b.db = v
 		case uint32:
 			b.file = v
 		case uint64:

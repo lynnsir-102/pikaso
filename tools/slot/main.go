@@ -115,10 +115,10 @@ var (
 )
 
 type slot struct {
-	DbName      string
-	Index       int
-	BeginFile   int
-	BeginOffset int
+	DbName       string `json:"dbname"`
+	PartitionId  int    `json:"partitionId"`
+	BinlogFile   int    `json:"binlogFile"`
+	BinlogOffset int    `json:"binlogOffset"`
 }
 
 func parseSlot(str string) (*slot, error) {

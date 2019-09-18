@@ -102,7 +102,9 @@ func (h *Handle) binlogResponse(resp *pr.InnerResponse) error {
 				binOffset = bs
 
 				if bs.GetFilenum() == 0 && bs.GetOffset() == 0 {
-					fmt.Printf("%s, partition %d, receive master heartbeat ❤️ ❤️ ❤️\n", time.Now().Format(TimeFormat), pid)
+					if h.debug {
+						fmt.Printf("%s, partition %d, receive master heartbeat ❤️ ❤️ ❤️\n", time.Now().Format(TimeFormat), pid)
+					}
 					continue
 				}
 

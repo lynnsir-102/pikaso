@@ -30,7 +30,7 @@ const TimeFormat = "2006-01-02 15:04:05"
 
 var ErrTransportTypeInvalid = errors.New("transport pb response type unknow")
 
-func NewHandle(addr string, fFn, eFn func() error, cFn func(row []string), echan chan error) (*Handle, error) {
+func NewHandle(addr string, fFn, eFn func() error, cFn func(row []string)) (*Handle, error) {
 	transport, err := newTransport(addr, 3*time.Second)
 	if err != nil {
 		return nil, err
@@ -42,7 +42,7 @@ func NewHandle(addr string, fFn, eFn func() error, cFn func(row []string), echan
 		commandfn:   cFn,
 		transport:   transport,
 		metamanager: newMetaManager(),
-		echan:       echan,
+		echan:       make(chan error),
 		exchan:      make(chan struct{}, 1),
 	}
 
@@ -105,6 +105,14 @@ func (h *Handle) Stop() error {
 
 func (h *Handle) WithDebug(d bool) {
 	h.debug = d
+}
+
+func (h *Handle) GetErrors() chan error {
+	return h.echan
+}
+
+func (h *Handle) GetMetasOffset() []map[string]interface{} {
+	return h.metamanager.getShifts()
 }
 
 func (h *Handle) send(req *pr.InnerRequest) error {
