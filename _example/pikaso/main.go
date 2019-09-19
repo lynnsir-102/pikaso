@@ -12,11 +12,10 @@ import (
 )
 
 var (
+	debug      bool
 	pikaHost   string
 	pikaPort   int
 	pikasoMode string
-	debug      bool
-	needStop   bool
 )
 
 const timeFormat = "2006-01-02 15:04:05"
@@ -25,7 +24,6 @@ func init() {
 	flag.IntVar(&pikaPort, "port", 9222, "pika port")
 	flag.StringVar(&pikaHost, "host", "127.0.0.1", "pika host")
 	flag.BoolVar(&debug, "debug", false, "use debug mode")
-	flag.BoolVar(&needStop, "stop", false, "stop pikaso after a while")
 	flag.StringVar(&pikasoMode, "mode", "sync_sharding", "pikaso mode, dump_classic/sync_classic/sync_sharding")
 	flag.Parse()
 }
@@ -44,37 +42,18 @@ func main() {
 	case "sync_sharding":
 		ins, err = shardingSync()
 	default:
-		log.Fatal("💡  not support pikaso mode")
+		log.Fatal("pikaso not support this mode\n")
 	}
 
 	if err != nil {
-		log.Fatalf("💡  initialize err [%s]\n", err.Error())
+		log.Fatalf("initialize err [%s]\n", err.Error())
 	}
 
-	log.Printf("🌟  Pikaso run as [%s] mode\n", pikasoMode)
+	log.Printf("pikaso run as [%s] mode\n", pikasoMode)
 
-	// the example to stop pikaso
-	if needStop {
-		go func() {
-			time.Sleep(30 * time.Second)
-			ins.Stop()
-		}()
-	}
-
-	// the example to receive pikaso error
-	go func() {
-		for err := range ins.Errors() {
-			log.Printf("pikaso err %s\n", err.Error())
-		}
-	}()
-
-	// the example to receive pikaso metasoffset
-	go func() {
-		for {
-			time.Sleep(3 * time.Second)
-			log.Printf("pikaso offset %v\n", ins.GetMetasOffset())
-		}
-	}()
+	ins.RegisterProcessor(func(row []string) {
+		fmt.Printf("%s, receive cmd %v\n", time.Now().Format(timeFormat), row)
+	})
 
 	err = ins.Run()
 	if err != nil {
@@ -83,7 +62,7 @@ func main() {
 }
 
 func classicdump() (w.Worker, error) {
-	w, err := pk.NewClassicDumper(&pc.Config{
+	return pk.NewClassicDumper(&pc.Config{
 		Dump: &pc.DumpConfig{
 			Debug:    debug,
 			PikaHost: pikaHost,
@@ -91,19 +70,10 @@ func classicdump() (w.Worker, error) {
 		},
 	})
 
-	if err != nil {
-		return nil, err
-	}
-
-	w.RegisterProcessor(func(row []string) {
-		fmt.Printf("in classic dump, %s, receive cmd %v\n", time.Now().Format(timeFormat), row)
-	})
-
-	return w, nil
 }
 
 func classicSync() (w.Worker, error) {
-	w, err := pk.NewClassicSyncer(&pc.Config{
+	return pk.NewClassicSyncer(&pc.Config{
 		ClassicSync: &pc.ClassicConfig{
 			Debug:        debug,
 			PikaHost:     pikaHost,
@@ -112,21 +82,10 @@ func classicSync() (w.Worker, error) {
 			BinlogOffset: 0,
 		},
 	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	w.RegisterProcessor(func(row []string) {
-		fmt.Printf("in classic sync, %s, receive cmd %v\n", time.Now().Format(timeFormat), row)
-	})
-
-	return w, nil
-
 }
 
 func shardingSync() (w.Worker, error) {
-	w, err := pk.NewShardingSyncer(&pc.Config{
+	return pk.NewShardingSyncer(&pc.Config{
 		ShardingSync: &pc.ShardingConfig{
 			Debug:    debug,
 			PikaHost: pikaHost,
@@ -159,15 +118,4 @@ func shardingSync() (w.Worker, error) {
 			},
 		},
 	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	w.RegisterProcessor(func(row []string) {
-		fmt.Printf("in sharding sync, %s, receive cmd %v\n", time.Now().Format(timeFormat), row)
-	})
-
-	return w, nil
-
 }
