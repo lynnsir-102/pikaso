@@ -108,7 +108,7 @@ func (h *Handle) WithProcessor(fn func(row []string)) error {
 	return nil
 }
 
-func (h *Handle) GetErrors() chan error {
+func (h *Handle) GetErrors() <-chan error {
 	return h.echan
 }
 

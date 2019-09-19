@@ -25,7 +25,7 @@ func (s *ClassicDumper) Stop() error {
 	return nil
 }
 
-func (s *ClassicDumper) Errors() chan error {
+func (s *ClassicDumper) Errors() <-chan error {
 	return nil
 }
 

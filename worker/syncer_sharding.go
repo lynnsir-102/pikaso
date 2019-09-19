@@ -44,7 +44,7 @@ func (s *ShardingSyncer) Stop() error {
 	return s.h.Stop()
 }
 
-func (s *ShardingSyncer) Errors() chan error {
+func (s *ShardingSyncer) Errors() <-chan error {
 	return s.h.GetErrors()
 }
 

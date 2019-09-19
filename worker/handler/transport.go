@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/binary"
 	"errors"
+	"fmt"
 	"io"
 	"net"
 	"strconv"
@@ -58,7 +59,7 @@ func (t *transport) read() ([]byte, error) {
 
 	_, err := t.conn.Read(t.headbuf)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("read headbuf err %s", err.Error())
 	}
 
 	mLen := binary.BigEndian.Uint32(t.headbuf)
@@ -71,8 +72,11 @@ func (t *transport) read() ([]byte, error) {
 	t.recvbuf = t.recvbuf[:mLen]
 
 	_, err = io.ReadFull(t.conn, t.recvbuf)
+	if err != nil {
+		return nil, fmt.Errorf("read recvbuf err %s", err.Error())
+	}
 
-	return t.recvbuf, err
+	return t.recvbuf, nil
 }
 
 func (t *transport) write(body []byte) (int, error) {

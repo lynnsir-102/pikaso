@@ -15,6 +15,7 @@ var (
 	pikaHost   string
 	pikaPort   int
 	pikasoMode string
+	debug      bool
 	needStop   bool
 )
 
@@ -23,6 +24,7 @@ const timeFormat = "2006-01-02 15:04:05"
 func init() {
 	flag.IntVar(&pikaPort, "port", 9222, "pika port")
 	flag.StringVar(&pikaHost, "host", "127.0.0.1", "pika host")
+	flag.BoolVar(&debug, "debug", false, "use debug mode")
 	flag.BoolVar(&needStop, "stop", false, "stop pikaso after a while")
 	flag.StringVar(&pikasoMode, "mode", "sync_sharding", "pikaso mode, dump_classic/sync_classic/sync_sharding")
 	flag.Parse()
@@ -83,7 +85,7 @@ func main() {
 func classicdump() (w.Worker, error) {
 	w, err := pk.NewClassicDumper(&pc.Config{
 		Dump: &pc.DumpConfig{
-			Debug:    false,
+			Debug:    debug,
 			PikaHost: pikaHost,
 			PikaPort: pikaPort,
 		},
@@ -103,7 +105,7 @@ func classicdump() (w.Worker, error) {
 func classicSync() (w.Worker, error) {
 	w, err := pk.NewClassicSyncer(&pc.Config{
 		ClassicSync: &pc.ClassicConfig{
-			Debug:        false,
+			Debug:        debug,
 			PikaHost:     pikaHost,
 			PikaPort:     pikaPort,
 			BinlogFile:   0,
@@ -126,7 +128,7 @@ func classicSync() (w.Worker, error) {
 func shardingSync() (w.Worker, error) {
 	w, err := pk.NewShardingSyncer(&pc.Config{
 		ShardingSync: &pc.ShardingConfig{
-			Debug:    false,
+			Debug:    debug,
 			PikaHost: pikaHost,
 			PikaPort: pikaPort,
 			Slots: []*pc.SlotConfig{

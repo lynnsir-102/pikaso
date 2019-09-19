@@ -44,7 +44,7 @@ func (s *ClassicSyncer) Stop() error {
 	return s.h.Stop()
 }
 
-func (s *ClassicSyncer) Errors() chan error {
+func (s *ClassicSyncer) Errors() <-chan error {
 	return s.h.GetErrors()
 }
 
