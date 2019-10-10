@@ -30,14 +30,13 @@ const TimeFormat = "2006-01-02 15:04:05"
 
 var ErrTransportTypeInvalid = errors.New("transport pb response type unknow")
 
-func NewHandle(addr string, d bool, fFn, eFn func() error) (*Handle, error) {
+func NewHandle(addr string, fFn, eFn func() error) (*Handle, error) {
 	transport, err := newTransport(addr, 3*time.Second)
 	if err != nil {
 		return nil, err
 	}
 
 	handle := &Handle{
-		debug:       d,
 		exitfn:      eFn,
 		firefn:      fFn,
 		transport:   transport,
@@ -105,6 +104,11 @@ func (h *Handle) Stop() error {
 
 func (h *Handle) WithProcessor(fn func(row []string)) error {
 	h.commandfn = fn
+	return nil
+}
+
+func (h *Handle) Debug(d bool) error {
+	h.debug = d
 	return nil
 }
 

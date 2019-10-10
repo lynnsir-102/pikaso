@@ -25,6 +25,10 @@ func (s *ClassicDumper) Stop() error {
 	return nil
 }
 
+func (s *ClassicDumper) Debug(d bool) error {
+	return nil
+}
+
 func (s *ClassicDumper) Errors() <-chan error {
 	return nil
 }

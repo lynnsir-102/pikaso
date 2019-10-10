@@ -46,7 +46,7 @@ func main() {
 	}
 
 	if err != nil {
-		log.Fatalf("initialize err [%s]\n", err.Error())
+		log.Fatalf("pikaso initialize err [%s]\n", err.Error())
 	}
 
 	log.Printf("pikaso run as [%s] mode\n", pikasoMode)
@@ -57,7 +57,7 @@ func main() {
 
 	err = ins.Run()
 	if err != nil {
-		log.Fatalf("💡  Pikaso exit, err [%s]\n", err.Error())
+		log.Fatalf("pikaso exit, err [%s]\n", err.Error())
 	}
 }
 
